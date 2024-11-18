@@ -1,0 +1,67 @@
+// To get started, press Ctrl+Space to bring up the completion menu and view the available nodes.
+
+// You can also use the buttons in the sidebar to perform actions on nodes.
+// Actions currently available include:
+
+// * Enabling / disabling the node
+// * Adding the bus to a bus
+// * Removing the node
+// * Connecting ADC channels
+
+// For more help, browse the DeviceTree documentation at https://docs.zephyrproject.org/latest/guides/dts/index.html
+// You can also visit the nRF DeviceTree extension documentation at https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/guides/ncs_configure_app.html#devicetree-support-in-the-extension
+
+// &gpio0 {
+//     status = "okay";
+//     pinctrl-0 = <&gpio0_pinmux>;
+//     pinctrl-names = "default";
+// };
+
+// / {
+//     aliases {
+//         sw0 = &button0;
+//     };
+// };
+
+// &gpio0 {
+//     button0: button_0 {
+//         gpios = <&gpio0 15 GPIO_ACTIVE_LOW>;  // Adjust as per the actual GPIO pin and settings
+//         label = "User Button";
+//     };
+// };
+
+
+// / {
+//     aliases {
+//         sw0 = &gpio162;
+//     };
+
+
+// / {
+//     aliases {
+//         sw0 = &gpio_140_176;
+//     };
+// };
+
+
+
+/ {
+    aliases {
+        sw0 = &gpio_240_276;
+		sw1 = &gpio_000_036;
+		sw2 = &gpio_200_236;
+		sw3 = &gpio_040_076;
+    };
+};  
+
+
+// / {
+//     aliases {
+//         sw0 = &gpio_100_136 106;  // GPIO106
+//         sw1 = &gpio_040_076 57;   // GPIO057
+//         sw2 = &gpio_200_236 222;  // GPIO222
+//         sw3 = &gpio_140_176 161;  // GPIO161
+//     };
+// };
+  
+
