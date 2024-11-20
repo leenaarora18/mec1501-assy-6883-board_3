@@ -1394,7 +1394,7 @@
 #define DT_N_S_buttons_S_button_0_P_gpios_IDX_0_PH DT_N_S_soc_S_pin_controller_40081000_S_gpio_40081180
 #define DT_N_S_buttons_S_button_0_P_gpios_IDX_0_VAL_pin 18
 #define DT_N_S_buttons_S_button_0_P_gpios_IDX_0_VAL_pin_EXISTS 1
-#define DT_N_S_buttons_S_button_0_P_gpios_IDX_0_VAL_flags 22
+#define DT_N_S_buttons_S_button_0_P_gpios_IDX_0_VAL_flags 0
 #define DT_N_S_buttons_S_button_0_P_gpios_IDX_0_VAL_flags_EXISTS 1
 #define DT_N_S_buttons_S_button_0_P_gpios_FOREACH_PROP_ELEM(fn) fn(DT_N_S_buttons_S_button_0, gpios, 0)
 #define DT_N_S_buttons_S_button_0_P_gpios_FOREACH_PROP_ELEM_SEP(fn, sep) fn(DT_N_S_buttons_S_button_0, gpios, 0)

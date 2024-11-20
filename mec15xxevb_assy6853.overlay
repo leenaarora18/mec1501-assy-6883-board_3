@@ -106,7 +106,7 @@
     buttons {
         compatible = "gpio-keys";
         button0: button_0 {
-            gpios = <&gpio_140_176 0x12 (GPIO_OPEN_DRAIN | GPIO_PULL_UP)>;
+            gpios = <&gpio_140_176 0x12 GPIO_ACTIVE_HIGH>;
             label = "User Button";
         };
     };

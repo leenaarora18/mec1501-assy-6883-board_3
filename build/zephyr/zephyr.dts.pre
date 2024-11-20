@@ -2329,7 +2329,7 @@
     buttons {
         compatible = "gpio-keys";
         button0: button_0 {
-            gpios = <&gpio_140_176 0x12 (((1 << 1) | (1 << 2)) | (1 << 4))>;
+            gpios = <&gpio_140_176 0x12 (0 << 0)>;
             label = "User Button";
         };
     };

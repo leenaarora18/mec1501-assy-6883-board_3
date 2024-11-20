@@ -735,6 +735,7 @@ void button_pressed(const struct device *dev, struct gpio_callback *cb, uint32_t
     printk("Button pressed on %s at %" PRIu32 "\n", dev->name, k_cycle_get_32());
     printk("inside the button Interuppt");
     /* Toggle the LED */
+     k_msleep(SLEEP_TIME_MS);
     gpio_pin_toggle_dt(&led);       
 }
 
@@ -764,7 +765,7 @@ int main(void)
         return ret;
     }
     ret = gpio_pin_interrupt_configure_dt(&button, GPIO_INT_EDGE_TO_ACTIVE);
-    if (ret != 0) {
+    if (ret != 0) { 
         printk("Error %d: failed to configure interrupt for button %s pin %d\n", ret, button.port->name, button.pin);
         return ret;
     }
@@ -782,3 +783,4 @@ int main(void)
 
     return 0;
 }
+
