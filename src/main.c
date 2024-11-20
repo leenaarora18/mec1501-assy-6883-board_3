@@ -538,98 +538,245 @@
 // }
 
 
+// #include <zephyr/kernel.h>
+// #include <zephyr/device.h>
+// #include <zephyr/drivers/gpio.h>
+// #include <zephyr/sys/util.h>
+// #include <zephyr/sys/printk.h>
+// #include <inttypes.h>
+// #define SLEEP_TIME_MS 1
+
+
+// /* Define possible GPIO controllers for buttons */
+// //#define GPIO_CONTROLLERS { "gpio_000_036", "gpio_040_076", "gpio_100_136", "gpio_140_176" }
+// /* Define possible GPIO controller labels as per .dts file */
+// #define GPIO_CONTROLLERS {"gpio_240_276", "gpio_000_036", "gpio_200_236", "gpio_040_076" }
+
+// /* Define button aliases for sw0, sw1, sw2, and sw3 */
+// #define SW0_NODE DT_ALIAS(sw0)
+// #define SW1_NODE DT_ALIAS(sw1)
+// #define SW2_NODE DT_ALIAS(sw2)
+// #define SW3_NODE DT_ALIAS(sw3)
+
+// #if !DT_NODE_HAS_STATUS(SW0_NODE, okay) && !DT_NODE_HAS_STATUS(SW1_NODE, okay) && !DT_NODE_HAS_STATUS(SW2_NODE, okay) && !DT_NODE_HAS_STATUS(SW3_NODE, okay)
+// #error "Unsupported board: none of the button devicetree aliases are defined"
+// #endif
+
+// /* Define the GPIO button devices */
+// static struct gpio_dt_spec buttons[] = {
+//     GPIO_DT_SPEC_GET_OR(SW0_NODE, gpios, {0}),
+//     GPIO_DT_SPEC_GET_OR(SW1_NODE, gpios, {0}),
+//     GPIO_DT_SPEC_GET_OR(SW2_NODE, gpios, {0}),
+//     GPIO_DT_SPEC_GET_OR(SW3_NODE, gpios, {0})
+// };
+
+// /* Define GPIO controllers to test */
+// const char *gpio_controllers[] = GPIO_CONTROLLERS;
+// static struct gpio_callback button_cb_data[4];
+
+// void button_pressed(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
+// {
+//     printk("Button pressed on port %s at %" PRIu32 "\n", dev->name, k_cycle_get_32());
+// }
+
+// int try_configure_button(struct gpio_dt_spec *button)
+// {
+//     int ret;
+//     /* Try to configure each GPIO controller for the button */
+//     for (int i = 0; i < ARRAY_SIZE(gpio_controllers); i++) {
+//         button->port = device_get_binding(gpio_controllers[i]);
+//         if (!button->port) {
+//             printk("Error: GPIO controller %s not found\n", gpio_controllers[i]);
+//             continue;
+//         }
+        
+//         /* Configure button as input */
+//         ret = gpio_pin_configure_dt(button, GPIO_INPUT);
+//         if (ret == 0) {
+//             printk("Configured button on %s pin %d\n", gpio_controllers[i], button->pin);
+//             return 0;
+//         }
+//     }
+//     printk("Error: Could not configure button pin %d\n", button->pin);
+//     return -1;
+// }
+
+// int main(void)
+// {
+//     int ret;
+//     /* Attempt to configure all buttons */
+//     for (int i = 0; i < ARRAY_SIZE(buttons); i++) {
+//         ret = try_configure_button(&buttons[i]);
+//         if (ret != 0) {
+//             printk("Error configuring button %d\n", i);    
+//             continue; 
+//         }
+        
+//         /* Configure button interrupt */
+//         ret = gpio_pin_interrupt_configure_dt(&buttons[i], GPIO_INT_EDGE_TO_ACTIVE);
+//         if (ret != 0) {
+//             printk("Error %d: failed to configure interrupt on button %d pin %d\n", ret, i, buttons[i].pin);
+//             continue;
+//         }
+
+//         /* Initialize button callback */
+//         gpio_init_callback(&button_cb_data[i], button_pressed, BIT(buttons[i].pin));
+//         gpio_add_callback(buttons[i].port, &button_cb_data[i]);
+//         printk("Set up button SW%d on %s pin %d\n", i, buttons[i].port->name, buttons[i].pin);
+//     }
+
+//     printk("Press any configured button to see results\n");   
+
+//     /* Main loop */
+//     while (1) {
+//         /* Code to monitor button state or manage LEDs here if needed */
+//         k_msleep(SLEEP_TIME_MS);
+//     }
+
+//     return 0;
+// }
+
+
+// #include <zephyr/kernel.h>
+// #include <zephyr/device.h>
+// #include <zephyr/drivers/gpio.h>
+// #include <zephyr/sys/printk.h>
+// #include <inttypes.h>
+
+// #define SLEEP_TIME_MS 1
+
+// /* Define button alias for sw0 */
+// #define SW0_NODE DT_ALIAS(sw0)
+
+// #if !DT_NODE_HAS_STATUS(SW0_NODE, okay)
+// #error "Unsupported board: sw0 devicetree alias is not defined"
+// #endif
+
+// /* Define the GPIO button device */
+// static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET_OR(SW0_NODE, gpios, {0});
+
+// /* Define GPIO callback */
+// static struct gpio_callback button_cb_data;
+
+// /* Button press callback function */
+// void button_pressed(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
+// {
+//     printk("Button pressed on %s at %" PRIu32 "\n", dev->name, k_cycle_get_32());
+// }
+
+// void main(void)
+// {
+//     int ret;
+
+//     if (!device_is_ready(button.port)) {
+//         printk("Error: Button device %s is not ready\n", button.port->name);
+//         return;
+//     }
+
+//     /* Configure the button pin as input */
+//     ret = gpio_pin_configure_dt(&button, GPIO_INPUT);
+//     if (ret != 0) {
+//         printk("Error %d: Failed to configure button pin %d\n", ret, button.pin);
+//         return;
+//     }
+
+//     /* Configure interrupt for the button pin */
+//     ret = gpio_pin_interrupt_configure_dt(&button, GPIO_INT_EDGE_TO_ACTIVE);
+//     if (ret != 0) {
+//         printk("Error %d: Failed to configure interrupt for pin %d\n", ret, button.pin);
+//         return;
+//     }
+
+//     /* Initialize button callback */
+//     gpio_init_callback(&button_cb_data, button_pressed, BIT(button.pin));
+//     gpio_add_callback(button.port, &button_cb_data);
+
+//     printk("Button configured: %s pin %d\n", button.port->name, button.pin);
+//     printk("Press the button to trigger an interrupt.\n");
+
+//     /* Main loop */
+//     while (1) {
+//         k_msleep(SLEEP_TIME_MS);
+//     }
+// }
+
+
+
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
-#include <zephyr/sys/util.h>
 #include <zephyr/sys/printk.h>
 #include <inttypes.h>
+
 #define SLEEP_TIME_MS 1
 
-
-/* Define possible GPIO controllers for buttons */
-//#define GPIO_CONTROLLERS { "gpio_000_036", "gpio_040_076", "gpio_100_136", "gpio_140_176" }
-/* Define possible GPIO controller labels as per .dts file */
-#define GPIO_CONTROLLERS {"gpio_240_276", "gpio_000_036", "gpio_200_236", "gpio_040_076" }
-
-/* Define button aliases for sw0, sw1, sw2, and sw3 */
+/* Button and LED aliases from the devicetree */
 #define SW0_NODE DT_ALIAS(sw0)
-#define SW1_NODE DT_ALIAS(sw1)
-#define SW2_NODE DT_ALIAS(sw2)
-#define SW3_NODE DT_ALIAS(sw3)
+#define LED0_NODE DT_ALIAS(led1)
 
-#if !DT_NODE_HAS_STATUS(SW0_NODE, okay) && !DT_NODE_HAS_STATUS(SW1_NODE, okay) && !DT_NODE_HAS_STATUS(SW2_NODE, okay) && !DT_NODE_HAS_STATUS(SW3_NODE, okay)
-#error "Unsupported board: none of the button devicetree aliases are defined"
+#if !DT_NODE_HAS_STATUS(SW0_NODE, okay)
+#error "Unsupported board: button alias 'sw0' not defined in the device tree"
 #endif
 
-/* Define the GPIO button devices */
-static struct gpio_dt_spec buttons[] = {
-    GPIO_DT_SPEC_GET_OR(SW0_NODE, gpios, {0}),
-    GPIO_DT_SPEC_GET_OR(SW1_NODE, gpios, {0}),
-    GPIO_DT_SPEC_GET_OR(SW2_NODE, gpios, {0}),
-    GPIO_DT_SPEC_GET_OR(SW3_NODE, gpios, {0})
-};
+#if !DT_NODE_HAS_STATUS(LED0_NODE, okay)
+#error "Unsupported board: LED alias 'led0' not defined in the device tree"
+#endif
 
-/* Define GPIO controllers to test */
-const char *gpio_controllers[] = GPIO_CONTROLLERS;
-static struct gpio_callback button_cb_data[4];
+/* Define button and LED devices */
+static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET_OR(SW0_NODE, gpios, {0});
+static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET_OR(LED0_NODE, gpios, {0});
 
+/* GPIO callback structure */
+static struct gpio_callback button_cb_data;
+
+/* Button pressed callback function */
 void button_pressed(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
 {
-    printk("Button pressed on port %s at %" PRIu32 "\n", dev->name, k_cycle_get_32());
-}
-
-int try_configure_button(struct gpio_dt_spec *button)
-{
-    int ret;
-    /* Try to configure each GPIO controller for the button */
-    for (int i = 0; i < ARRAY_SIZE(gpio_controllers); i++) {
-        button->port = device_get_binding(gpio_controllers[i]);
-        if (!button->port) {
-            printk("Error: GPIO controller %s not found\n", gpio_controllers[i]);
-            continue;
-        }
-        
-        /* Configure button as input */
-        ret = gpio_pin_configure_dt(button, GPIO_INPUT);
-        if (ret == 0) {
-            printk("Configured button on %s pin %d\n", gpio_controllers[i], button->pin);
-            return 0;
-        }
-    }
-    printk("Error: Could not configure button pin %d\n", button->pin);
-    return -1;
+    printk("Button pressed on %s at %" PRIu32 "\n", dev->name, k_cycle_get_32());
+    printk("inside the button Interuppt");
+    /* Toggle the LED */
+    gpio_pin_toggle_dt(&led);       
 }
 
 int main(void)
 {
     int ret;
-    /* Attempt to configure all buttons */
-    for (int i = 0; i < ARRAY_SIZE(buttons); i++) {
-        ret = try_configure_button(&buttons[i]);
-        if (ret != 0) {
-            printk("Error configuring button %d\n", i);    
-            continue; 
-        }
-        
-        /* Configure button interrupt */
-        ret = gpio_pin_interrupt_configure_dt(&buttons[i], GPIO_INT_EDGE_TO_ACTIVE);
-        if (ret != 0) {
-            printk("Error %d: failed to configure interrupt on button %d pin %d\n", ret, i, buttons[i].pin);
-            continue;
-        }
-
-        /* Initialize button callback */
-        gpio_init_callback(&button_cb_data[i], button_pressed, BIT(buttons[i].pin));
-        gpio_add_callback(buttons[i].port, &button_cb_data[i]);
-        printk("Set up button SW%d on %s pin %d\n", i, buttons[i].port->name, buttons[i].pin);
+      printk("Hello Surjit");
+    /* Configure the LED as an output */
+    if (!device_is_ready(led.port)) {
+        printk("Error: LED device %s is not ready\n", led.port->name);
+        return -1;
+    }
+    ret = gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE);
+    if (ret != 0) {
+        printk("Error %d: failed to configure LED %s pin %d\n", ret, led.port->name, led.pin);
+        return ret;
     }
 
-    printk("Press any configured button to see results\n");   
+    /* Configure the button as an input with interrupt */
+    if (!device_is_ready(button.port)) {
+        printk("Error: Button device %s is not ready\n", button.port->name);
+        return -1;
+    }
+    ret = gpio_pin_configure_dt(&button, GPIO_INPUT);
+    if (ret != 0) {
+        printk("Error %d: failed to configure button %s pin %d\n", ret, button.port->name, button.pin);
+        return ret;
+    }
+    ret = gpio_pin_interrupt_configure_dt(&button, GPIO_INT_EDGE_TO_ACTIVE);
+    if (ret != 0) {
+        printk("Error %d: failed to configure interrupt for button %s pin %d\n", ret, button.port->name, button.pin);
+        return ret;
+    }
+
+    /* Initialize button callback */
+    gpio_init_callback(&button_cb_data, button_pressed, BIT(button.pin));
+    gpio_add_callback(button.port, &button_cb_data);
+    printk("Set up button on %s pin %d\n", button.port->name, button.pin);
+    printk("Set up LED on %s pin %d\n", led.port->name, led.pin);
 
     /* Main loop */
     while (1) {
-        /* Code to monitor button state or manage LEDs here if needed */
         k_msleep(SLEEP_TIME_MS);
     }
 

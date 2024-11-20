@@ -44,16 +44,34 @@
 // };
 
 
+// / {
+//     aliases {
+//         sw0 = &gpio_240_276;
+// 		sw1 = &gpio_000_036;
+// 		sw2 = &gpio_200_236;
+// 		sw3 = &gpio_040_076;
+//     };
+// };  
 
-/ {
-    aliases {
-        sw0 = &gpio_240_276;
-		sw1 = &gpio_000_036;
-		sw2 = &gpio_200_236;
-		sw3 = &gpio_040_076;
-    };
-};  
+// &gpio_140_176 {
+//     status = "okay";
+//     label = "GPIO_140_176";
+// };
 
+// &sw0 {
+//     gpios = <&gpio_140_176 10 GPIO_ACTIVE_LOW>;
+//     label = "Button 0";
+// };
+
+
+
+
+// / {
+//     aliases {
+//         sw0 = &gpio_200_236;
+		
+//     };
+// };  
 
 // / {
 //     aliases {
@@ -64,4 +82,50 @@
 //     };
 // };
   
+
+// / {
+//     aliases {
+//         sw0 = &button0;  /* Alias for the button */
+//     };
+       
+//     buttons {
+//         compatible = "gpio-keys";
+//         button0: button_0 {
+//             gpios = <&gpio_140_176 0x12 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+//             label = "User Button";
+//         };
+//     };
+// };
+
+
+/ {
+    aliases {
+        sw0 = &button0;  /* Alias for the button */
+    };
+       
+    buttons {
+        compatible = "gpio-keys";
+        button0: button_0 {
+            gpios = <&gpio_140_176 0x12 (GPIO_OPEN_DRAIN | GPIO_PULL_UP)>;
+            label = "User Button";
+        };
+    };
+};
+
+
+// / {
+//     aliases {
+//         sw0 = &button0;  /* Alias for the button */
+//     };
+       
+//     buttons {
+//         compatible = "gpio-keys";
+//         button0: button_0 {
+//             gpios = <&gpio_140_176 0xc3 GPIO_ACTIVE_LOW GPIO_PULL_UP>;
+//             label = "User Button";
+//         };
+//     };
+// };
+ 
+
 

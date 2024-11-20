@@ -2320,13 +2320,18 @@
 };
 # 0 "<command-line>" 2
 # 1 "/home/jayesh/zephyrproject/zephyr/samples/basic/button/mec15xxevb_assy6853.overlay" 1
-# 48 "/home/jayesh/zephyrproject/zephyr/samples/basic/button/mec15xxevb_assy6853.overlay"
+# 101 "/home/jayesh/zephyrproject/zephyr/samples/basic/button/mec15xxevb_assy6853.overlay"
 / {
     aliases {
-        sw0 = &gpio_240_276;
-  sw1 = &gpio_000_036;
-  sw2 = &gpio_200_236;
-  sw3 = &gpio_040_076;
+        sw0 = &button0;
+    };
+
+    buttons {
+        compatible = "gpio-keys";
+        button0: button_0 {
+            gpios = <&gpio_140_176 0x12 (((1 << 1) | (1 << 2)) | (1 << 4))>;
+            label = "User Button";
+        };
     };
 };
 # 0 "<command-line>" 2
